@@ -8,6 +8,7 @@ import (
 	"github.com/ktuty/todo-app"
 )
 
+// CreateItem создает новую задачу
 // @Summary Create todo item
 // @Security ApiKeyAuth
 // @Tags items
@@ -15,12 +16,13 @@ import (
 // @ID create-item
 // @Accept  json
 // @Produce  json
+// @Param id path int true "List ID"
 // @Param input body todo.TodoItem true "item info"
 // @Success 200 {integer} integer 1
 // @Failure 400,404 {object} errorResponse
 // @Failure 500 {object} errorResponse
 // @Failure default {object} errorResponse
-// @Router /api/lists/:id/items [post]
+// @Router /api/v1/lists/{id}/items [post]
 func (h *Handler) createItem(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {
@@ -51,18 +53,20 @@ func (h *Handler) createItem(c *gin.Context) {
 	})
 }
 
-// @Summary Get All Items
+// GetAllItems получает все задачи списка
+// @Summary Get all items
 // @Security ApiKeyAuth
 // @Tags items
 // @Description get all items
 // @ID get-all-items
 // @Accept  json
 // @Produce  json
+// @Param id path int true "List ID"
 // @Success 200 {object} []todo.TodoItem
 // @Failure 400,404 {object} errorResponse
 // @Failure 500 {object} errorResponse
 // @Failure default {object} errorResponse
-// @Router /api/lists/:id/items [get]
+// @Router /api/v1/lists/{id}/items [get]
 func (h *Handler) getAllItems(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {
@@ -85,18 +89,20 @@ func (h *Handler) getAllItems(c *gin.Context) {
 	c.JSON(http.StatusOK, items)
 }
 
-// @Summary Get Items By Id
+// GetItemById получает задачу по ID
+// @Summary Get item by ID
 // @Security ApiKeyAuth
 // @Tags items
 // @Description get item by id
 // @ID get-item-by-id
 // @Accept  json
 // @Produce  json
+// @Param id path int true "Item ID"
 // @Success 200 {object} todo.TodoItem
 // @Failure 400,404 {object} errorResponse
 // @Failure 500 {object} errorResponse
 // @Failure default {object} errorResponse
-// @Router /api/items/:id [get]
+// @Router /api/v1/items/{id} [get]
 func (h *Handler) getItemById(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {
@@ -119,18 +125,21 @@ func (h *Handler) getItemById(c *gin.Context) {
 	c.JSON(http.StatusOK, item)
 }
 
-// @Summary Update Item
+// UpdateItem обновляет задачу
+// @Summary Update item
 // @Security ApiKeyAuth
 // @Tags items
 // @Description update item
 // @ID update-item
 // @Accept  json
 // @Produce  json
+// @Param id path int true "Item ID"
+// @Param input body todo.UpdateItemInput true "Item update data"
 // @Success 200 {object} statusResponse
 // @Failure 400,404 {object} errorResponse
 // @Failure 500 {object} errorResponse
 // @Failure default {object} errorResponse
-// @Router /api/items/:id [put]
+// @Router /api/v1/items/{id} [put]
 func (h *Handler) updateItem(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {
@@ -158,18 +167,20 @@ func (h *Handler) updateItem(c *gin.Context) {
 	c.JSON(http.StatusOK, statusResponse{"ok"})
 }
 
-// @Summary Delete Item
+// DeleteItem удаляет задачу
+// @Summary Delete item
 // @Security ApiKeyAuth
 // @Tags items
 // @Description delete item
 // @ID delete-item
 // @Accept  json
 // @Produce  json
+// @Param id path int true "Item ID"
 // @Success 200 {object} statusResponse
 // @Failure 400,404 {object} errorResponse
 // @Failure 500 {object} errorResponse
 // @Failure default {object} errorResponse
-// @Router /api/items/:id [delete]
+// @Router /api/v1/items/{id} [delete]
 func (h *Handler) deleteItem(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {

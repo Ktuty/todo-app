@@ -1,6 +1,8 @@
 package service
 
 import (
+	"time"
+
 	"github.com/ktuty/todo-app"
 	"github.com/ktuty/todo-app/pkg/repository"
 )
@@ -17,6 +19,10 @@ type TodoList interface {
 	GetById(userId, listId int) (todo.TodoList, error)
 	Delete(userId, listId int) error
 	Update(userId, listId int, input todo.UpdateListInput) error
+	// V2 методы
+	GetAllWithPagination(userId, offset, limit int, archived string) ([]todo.TodoList, int, error)
+	GetItemCount(userId, listId int) (int, error)
+	ArchiveList(userId, listId int) error
 }
 
 type TodoItem interface {
@@ -25,12 +31,22 @@ type TodoItem interface {
 	GetById(userId, itemId int) (todo.TodoItem, error)
 	Delete(userId, itemId int) error
 	Update(userId, itemId int, input todo.UpdateItemInput) error
+	// V2 методы
+	GetAllWithPagination(userId, listId, offset, limit int, completed string) ([]todo.TodoItem, int, error)
+	ArchiveItem(userId, itemId int) error
+	CompleteItem(userId, itemId int) error
+}
+
+type Idempotency interface {
+	CheckIdempotency(userId int, key string) (int, error)
+	StoreIdempotency(userId int, key string, resourceId int, ttl time.Duration) error
 }
 
 type Service struct {
 	Authorization
 	TodoList
 	TodoItem
+	Idempotency
 }
 
 func NewService(repos *repository.Repository) *Service {
@@ -38,5 +54,6 @@ func NewService(repos *repository.Repository) *Service {
 		Authorization: NewAuthService(repos.Authorization),
 		TodoList:      NewTodoListService(repos.TodoList),
 		TodoItem:      NewTodoItemService(repos.TodoItem, repos.TodoList),
+		Idempotency:   NewIdempotencyService(), // Добавляем сервис идемпотентности
 	}
 }

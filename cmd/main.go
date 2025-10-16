@@ -17,8 +17,16 @@ import (
 )
 
 // @title Todo App API
-// @version 1.0
-// @description API Server for TodoList Application
+// @version 2.0
+// @description API Server for TodoList Application with multiple versions, rate limiting and idempotency support
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email support@swagger.io
+
+// @license.name MIT
+// @license.url https://opensource.org/licenses/MIT
 
 // @host localhost:8000
 // @BasePath /
@@ -26,6 +34,9 @@ import (
 // @securityDefinitions.apikey ApiKeyAuth
 // @in header
 // @name Authorization
+// @description Type "Bearer" followed by a space and JWT token
+
+// @x-extension-openapi {"example": "value"}
 
 func main() {
 	logrus.SetFormatter(new(logrus.JSONFormatter))

@@ -16,6 +16,10 @@ type TodoList interface {
 	GetById(userId, listId int) (todo.TodoList, error)
 	Delete(userId, listId int) error
 	Update(userId, listId int, input todo.UpdateListInput) error
+	// V2 методы
+	GetAllWithPagination(userId, offset, limit int, archived string) ([]todo.TodoList, int, error)
+	GetItemCount(userId, listId int) (int, error)
+	ArchiveList(userId, listId int) error
 }
 
 type TodoItem interface {
@@ -24,6 +28,10 @@ type TodoItem interface {
 	GetById(userId, itemId int) (todo.TodoItem, error)
 	Delete(userId, itemId int) error
 	Update(userId, itemId int, input todo.UpdateItemInput) error
+	// V2 методы
+	GetAllWithPagination(userId, listId, offset, limit int, completed string) ([]todo.TodoItem, int, error)
+	ArchiveItem(userId, itemId int) error
+	CompleteItem(userId, itemId int) error
 }
 
 type Repository struct {
