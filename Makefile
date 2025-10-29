@@ -25,6 +25,16 @@ swag:
 	swag init -g cmd/main.go
 
 # RabbitMQ Tests (Windows compatible)
+all-rabbit-tests:
+	@make test-rabbitmq-http
+	@make test-load
+	@make test-auth
+	@make test-rabbitmq-create-user
+	@make test-rabbitmq-actions
+	@make test-rabbitmq-stats
+	@make health-full
+
+
 test-rabbitmq-create-user:
 	@echo "Testing RabbitMQ create_user action..."
 	@go run cmd/test_rabbitmq/client.go
@@ -138,7 +148,6 @@ help:
 	@echo "Testing:"
 	@echo "  test               - Run all tests"
 	@echo "  test-unit          - Run unit tests only"
-	@echo "  test-rabbitmq-simple - Simple RabbitMQ test"
 	@echo "  test-rabbitmq-http   - Test RabbitMQ HTTP endpoints"
 	@echo "  test-load          - Run load test"
 	@echo "  test-auth          - Test authentication"
