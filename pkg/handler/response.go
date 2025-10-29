@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"encoding/json"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"time"
@@ -35,6 +37,13 @@ func newRateLimitResponse(c *gin.Context, retryAfter int, limit int, remaining i
 	})
 }
 
+var ErrInvalidAction = errors.New("invalid action")
+
+// GetCurrentTime возвращает текущее время в UTC
+func GetCurrentTime() time.Time {
+	return time.Now().UTC()
+}
+
 // Дополнительные структуры для ответа
 type healthResponse struct {
 	Status       string       `json:"status"`
@@ -56,3 +65,38 @@ type systemInfo struct {
 }
 
 var startTime = time.Now()
+
+type RabbitMQRequest struct {
+	ID      string          `json:"id"`
+	Version string          `json:"version"`
+	Action  string          `json:"action"`
+	Data    json.RawMessage `json:"data"`
+	Auth    string          `json:"auth"`
+}
+
+// RabbitMQResponse структура исходящего сообщения в RabbitMQ
+type RabbitMQResponse struct {
+	CorrelationID string      `json:"correlation_id"`
+	Status        string      `json:"status"`
+	Data          interface{} `json:"data"`
+	Error         *string     `json:"error"`
+}
+
+// CreateUserRequest структура для создания пользователя через RabbitMQ
+type CreateUserRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+// CreateListRequest структура для создания списка через RabbitMQ
+type CreateListRequest struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+}
+
+// CreateItemRequest структура для создания item через RabbitMQ
+type CreateItemRequest struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	ListID      int    `json:"list_id"`
+}

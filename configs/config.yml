@@ -6,3 +6,9 @@ db:
     port: "5432"
     dbname: "test"
     sslmode: "disable"
+
+rabbitmq:
+    url: "amqp://admin:password@localhost:5672/"
+    request_queue: "api.requests"
+    response_queue: "api.responses"
+    dlq: "api.dlq"

@@ -61,14 +61,29 @@ func main() {
 		logrus.Fatalf("failed to initialize db: %s", err.Error())
 	}
 
+	// RabbitMQ
+	rabbitService, err := service.NewRabbitMQService(service.ConfigMQ{
+		URL: viper.GetString("rabbitmq.url"),
+	})
+	if err != nil {
+		logrus.Fatalf("failed to initialize RabbitMQ: %s", err.Error())
+	}
+	defer rabbitService.Close()
+
 	repos := repository.NewRepository(db)
 	services := service.NewService(repos)
-	handlers := handler.NewHandler(services)
+	handlers := handler.NewHandler(services, rabbitService)
 
 	srv := new(todo.Server)
 	go func() {
 		if err := srv.Run(viper.GetString("port"), handlers.InitRoutes()); err != nil {
 			logrus.Fatalf("error occured while running http server: %s", err.Error())
+		}
+	}()
+
+	go func() {
+		if err := handlers.StartRabbitMQConsumer(); err != nil {
+			logrus.Fatalf("error starting RabbitMQ consumer: %s", err.Error())
 		}
 	}()
 

@@ -1,22 +1,23 @@
 version: '3.8'
 
 services:
-  todo-app:
-    build: ./
-    command: ./wait-for-postgres.sh db ./todo-app
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: todo-rabbitmq
+    hostname: rabbitmq
     ports:
-      - 8000:8000
-    depends_on:
-      - db
+      - "5672:5672"   # AMQP protocol
+      - "15672:15672" # Management UI
     environment:
-      - DB_PASSWORD=secret
-
-  db:
-    restart: always
-    image: postgres:latest
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=password
     volumes:
-    - ./.database/postgres/data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_PASSWORD=secret
-    ports:
-      - 5436:5432
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
+
+volumes:
+  rabbitmq_data:

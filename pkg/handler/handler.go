@@ -12,10 +12,14 @@ import (
 
 type Handler struct {
 	services *service.Service
+	rabbitMQ *service.ServiceMQ
 }
 
-func NewHandler(services *service.Service) *Handler {
-	return &Handler{services: services}
+func NewHandler(services *service.Service, rabbitMQ *service.ServiceMQ) *Handler {
+	return &Handler{
+		services: services,
+		rabbitMQ: rabbitMQ,
+	}
 }
 
 func (h *Handler) InitRoutes() *gin.Engine {
@@ -33,6 +37,15 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	{
 		auth.POST("/sign-up", h.signUp)
 		auth.POST("/sign-in", h.signIn)
+	}
+
+	// RabbitMQ routes
+	rabbitmq := router.Group("/rabbitmq")
+	{
+		rabbitmq.POST("/process", h.ProcessRabbitMQMessage)
+		rabbitmq.POST("/send", h.SendRabbitMQMessage)
+		rabbitmq.GET("/health", h.RabbitMQHealthCheck)
+		rabbitmq.GET("/stats", h.GetRabbitMQStats) // Добавляем эту строку
 	}
 
 	// Версия 1 API - базовая функциональность
